@@ -13,12 +13,7 @@ SELECT * FROM (
     SeatNumber,
     SeatClass,
     PaymentID,
-    -- CASE 
-    --     WHEN LAFD.REC_SRC = 'AI_FLIGHT_DETAILS' THEN 'Air India'
-    --   --  WHEN LAFD.REC_SRC = 'SJ_FLIGHT_DETAILS' THEN 'Spice Jet'
-    --   --  ELSE 'Unknown'
-    -- END AS AirLine,
-    'Air India' as AirLine,
+     'Air India' as AirLine,
     DOB,
     ScheduledDepartureDateTime,
     ArrivalDateTime,
