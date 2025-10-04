@@ -1,4 +1,4 @@
 defaultProject: skyvault-473206
-defaultDataset: satging
-defaultAssertionDataset: satging
+defaultDataset: staging
+defaultAssertionDataset: staging
 dataformCoreVersion: 3.0.26
