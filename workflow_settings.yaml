@@ -1,4 +1,4 @@
 defaultProject: skyvault-473206
-defaultDataset: raw_vault
-defaultAssertionDataset: raw_vault
+defaultDataset: satging
+defaultAssertionDataset: satging
 dataformCoreVersion: 3.0.26
