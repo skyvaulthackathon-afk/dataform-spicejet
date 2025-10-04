@@ -11,8 +11,6 @@ JOIN ${ref("SAT_BOOKING_DETAILS_AI")} SB
 ON (LBP.HK_BookingID = SB.HK_BookingID)
 JOIN ${ref("SAT_PAYMENT_AI")} SPAI
 ON (LBP.HK_PaymentID = SPAI.HK_PaymentID)
---JOIN ${refSAT_PAYMENT_SJ SPSJ
---ON (LBP.HK_PaymentID = SPSJ.HK_PaymentID)
 GROUP BY 1,2)
  
 UNION ALL
