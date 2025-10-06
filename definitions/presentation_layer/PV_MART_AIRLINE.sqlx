@@ -1,12 +1,12 @@
   config {
 type: "table",
 schema: "presentation_vault",
-tags: ["presentation_vault", "mart_airline"]
+tags: ["presentation_vault", "merged_airline_data"]
 }
 SELECT * FROM (
 (SELECT DISTINCT HBD.BookingID,
     SFD.FlightNumber,
-    SAD.FlightID,
+  --  SAD.FlightID,
     PassengerID,
     SAD.Status,
     BookingDate,
@@ -15,11 +15,11 @@ SELECT * FROM (
     PaymentID,
      'Air India' as AirLine,
     DOB,
-    ScheduledDepartureDateTime,
-    ArrivalDateTime,
-    ActualDepartureDateTime,
-    OriginAirportCode,
-    DestinationAirportCode,
+    FORMAT_TIMESTAMP('%Y-%m-%d %H:%M', ScheduledDepartureDateTime) AS ScheduledDepartureDateTime,
+    FORMAT_TIMESTAMP('%Y-%m-%d %H:%M', ArrivalDateTime) AS ArrivalDateTime,
+    FORMAT_TIMESTAMP('%Y-%m-%d %H:%M', ActualDepartureDateTime) AS ActualDepartureDateTime,
+    SAD2.airportname AS OriginAirportCode,
+    t1.AirportName AS DestinationAirportName,
     PaymentMethod,
     Amount,
     TIMESTAMP_DIFF(actualdeparturedatetime, scheduleddeparturedatetime, HOUR) AS Delayed_Hours
@@ -39,6 +39,8 @@ ON LBPD.HK_PAYMENTID = SP.HK_PAYMENTID
 JOIN ${ref("LINK_AIRPORT_FLIGHT_DETAILS")} LAFD 
  ON SFD.HK_FLIGHTID = LAFD.HK_FLIGHTID 
  AND LAFD.REC_SRC = 'AI_FLIGHT_DETAILS'
+ LEFT JOIN ${ref("SAT_AIRPORT_DETAILS_AI")} AS t1
+ON LAFD.HK_DestinationAirportCode = t1.HK_AirportCode
  JOIN ${ref("SAT_AIRPORT_DETAILS_AI")} SAD2 
  ON LAFD.HK_ORIGINAIRPORTCODE = SAD2.HK_AIRPORTCODE 
  join ${ref("HUB_BOOKING_DETAILS")} HBD  
@@ -48,7 +50,7 @@ ORDER BY 1
 UNION ALL
 ( SELECT DISTINCT HBD.BookingID,
     SFD.FlightNumber,
-    SAD.FlightID,
+  --  SAD.FlightID,
     PassengerID,
     SAD.Status,
     BookingDate,
@@ -57,11 +59,11 @@ UNION ALL
     PaymentID,
      'Spice Jet' as AirLine,
     DOB,
-    ScheduledDepartureDateTime,
-    ArrivalDateTime,
-    ActualDepartureDateTime,
-    OriginAirportCode,
-    DestinationAirportCode,
+    FORMAT_TIMESTAMP('%Y-%m-%d %H:%M', ScheduledDepartureDateTime) AS ScheduledDepartureDateTime,
+    FORMAT_TIMESTAMP('%Y-%m-%d %H:%M', ArrivalDateTime) AS ArrivalDateTime,
+    FORMAT_TIMESTAMP('%Y-%m-%d %H:%M', ActualDepartureDateTime) AS ActualDepartureDateTime,
+    SAD2.airportname AS OriginAirportCode,
+    t1.AirportName AS DestinationAirportName,
     PaymentMethod,
     Amount,
     TIMESTAMP_DIFF(actualdeparturedatetime, scheduleddeparturedatetime, HOUR) AS Delayed_Hours
@@ -81,6 +83,8 @@ ON LBPD.HK_PAYMENTID = SP.HK_PAYMENTID
 JOIN ${ref("LINK_AIRPORT_FLIGHT_DETAILS")} LAFD 
  ON SFD.HK_FLIGHTID = LAFD.HK_FLIGHTID 
  AND LAFD.REC_SRC = 'SJ_FLIGHT_DETAILS'
+LEFT JOIN ${ref("SAT_AIRPORT_DETAILS_SJ")} AS t1
+ON LAFD.HK_DestinationAirportCode = t1.HK_AirportCode
  JOIN ${ref("SAT_AIRPORT_DETAILS_SJ")} SAD2 
  ON LAFD.HK_ORIGINAIRPORTCODE = SAD2.HK_AIRPORTCODE 
  join ${ref("HUB_BOOKING_DETAILS")} HBD  
