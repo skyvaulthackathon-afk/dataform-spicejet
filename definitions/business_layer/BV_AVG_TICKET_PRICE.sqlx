@@ -1,7 +1,7 @@
 config {
 type: "table",
 schema: "business_vault",
-tags: ["business_vault", "monthly_bookings"]
+tags: ["business_vault", "avg_tickte_price_per_class"]
 }
  
 SELECT SeatClass,ROUND(AVG(AVG_TICKET)) AS AVG_TICKET_PRICE FROM(
