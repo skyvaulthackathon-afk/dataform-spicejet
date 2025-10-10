@@ -22,14 +22,16 @@ if (!fs.existsSync(targetDir)) {
 // --- HUB GENERATOR ---
 function generateHub(table_name, business_key, source_table_AI, source_table_SJ) {
   return `
+
 config {
   type: "table",
+  bigquery: { partitionBy: "DATE(LOAD_DTS)", clusterBy: ["HK_${business_key}"] },
   schema: "raw_vault",
   tags: ["hub"]
 }
 
 SELECT
-  MD5(${business_key}) AS HK_${business_key},
+  TO_HEX(MD5(${business_key})) AS HK_${business_key},
   ${business_key},
   CURRENT_TIMESTAMP() AS LOAD_DTS,
   '${source_table_AI}' AS REC_SRC
@@ -38,7 +40,7 @@ WHERE ${business_key} IS NOT NULL
 GROUP BY ${business_key}
 UNION ALL
 SELECT
-  MD5(${business_key}) AS HK_${business_key},
+  TO_HEX(MD5(${business_key})) AS HK_${business_key},
   ${business_key},
   CURRENT_TIMESTAMP() AS LOAD_DTS,
   '${source_table_SJ}' AS REC_SRC
@@ -61,12 +63,13 @@ function generateSatellite_AI(table_name, business_key, descriptive_fields_AI, s
   return `
 config {
   type: "table",
+  bigquery: { partitionBy: "DATE(LOAD_DTS)", clusterBy: ["HK_${business_key}"] },
   schema: "raw_vault",
   tags: ["satellite"]
 }
 
 SELECT
-  MD5(${business_key}) AS HK_${business_key},
+  TO_HEX(MD5(${business_key})) AS HK_${business_key},
   ${attrSelect},
   CURRENT_TIMESTAMP() AS LOAD_DTS,
   '${source_table_AI}' AS REC_SRC
@@ -89,12 +92,13 @@ function generateSatellite_SJ(table_name, business_key, descriptive_fields_SJ, s
   return `
 config {
   type: "table",
+  bigquery: { partitionBy: "DATE(LOAD_DTS)", clusterBy: ["HK_${business_key}"] },
   schema: "raw_vault",
   tags: ["satellite"]
 }
 
 SELECT
-  MD5(${business_key}) AS HK_${business_key},
+  TO_HEX(MD5(${business_key})) AS HK_${business_key},
   ${attrSelect},
   CURRENT_TIMESTAMP() AS LOAD_DTS,
   '${source_table_SJ}' AS REC_SRC
@@ -107,7 +111,7 @@ GROUP BY ${business_key}${attrGroup ? ', ' + attrGroup : ''}
 // --- LINK GENERATOR ---
 function generateLink(table_name, business_key, source_table_AI, source_table_SJ) {
   const keys = business_key.split('|').map(k => k.trim()).filter(k => k.length > 0);
-  const md5EachKey = keys.map(k => `MD5(${k}) AS HK_${k}`).join(',\n  ');
+  const md5EachKey = keys.map(k => `TO_HEX(MD5(${k})) AS HK_${k}`).join(',\n  ');
   const hashKey = `HK_L_${table_name.toUpperCase()}`;
   const hashExpression = keys.map(k => `COALESCE(${k}, '')`).join(" || '|' || ");
   const notNullConditions = keys.map(k => `${k} IS NOT NULL`).join(' AND ');
@@ -115,12 +119,13 @@ function generateLink(table_name, business_key, source_table_AI, source_table_SJ
   return `
 config {
   type: "table",
+  bigquery: { partitionBy: "DATE(LOAD_DTS)", clusterBy: ["${hashKey}"] },
   schema: "raw_vault",
   tags: ["link"]
 }
 
 SELECT
-  MD5(${hashExpression}) AS ${hashKey},
+  TO_HEX(MD5(${hashExpression})) AS ${hashKey},
   ${md5EachKey},
   CURRENT_TIMESTAMP() AS LOAD_DTS,
   '${source_table_AI}' AS REC_SRC
@@ -130,7 +135,7 @@ WHERE ${notNullConditions}
 UNION ALL
 
 SELECT
-  MD5(${hashExpression}) AS ${hashKey},
+  TO_HEX(MD5(${hashExpression})) AS ${hashKey},
   ${md5EachKey},
   CURRENT_TIMESTAMP() AS LOAD_DTS,
   '${source_table_SJ}' AS REC_SRC
