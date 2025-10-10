@@ -1,11 +1,12 @@
 config {
   type: "table",
+  bigquery: { partitionBy: "DATE(LOAD_DTS)", clusterBy: ["HK_AirportCode"] },
   schema: "raw_vault",
   tags: ["hub"]
 }
 
 SELECT
-  MD5(AirportCode) AS HK_AirportCode,
+  TO_HEX(MD5(AirportCode)) AS HK_AirportCode,
   AirportCode,
   CURRENT_TIMESTAMP() AS LOAD_DTS,
   'AI_AIRPORT_DETAILS' AS REC_SRC
@@ -14,7 +15,7 @@ WHERE AirportCode IS NOT NULL
 GROUP BY AirportCode
 UNION ALL
 SELECT
-  MD5(AirportCode) AS HK_AirportCode,
+  TO_HEX(MD5(AirportCode)) AS HK_AirportCode,
   AirportCode,
   CURRENT_TIMESTAMP() AS LOAD_DTS,
   'SJ_AIRPORT_DETAILS' AS REC_SRC

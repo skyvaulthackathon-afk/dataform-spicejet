@@ -1,11 +1,12 @@
 config {
   type: "table",
+  bigquery: { partitionBy: "DATE(LOAD_DTS)", clusterBy: ["HK_PaymentID"] },
   schema: "raw_vault",
   tags: ["hub"]
 }
 
 SELECT
-  MD5(PaymentID) AS HK_PaymentID,
+  TO_HEX(MD5(PaymentID)) AS HK_PaymentID,
   PaymentID,
   CURRENT_TIMESTAMP() AS LOAD_DTS,
   'AI_PAYMENT' AS REC_SRC
@@ -14,7 +15,7 @@ WHERE PaymentID IS NOT NULL
 GROUP BY PaymentID
 UNION ALL
 SELECT
-  MD5(PaymentID) AS HK_PaymentID,
+  TO_HEX(MD5(PaymentID)) AS HK_PaymentID,
   PaymentID,
   CURRENT_TIMESTAMP() AS LOAD_DTS,
   'SJ_PAYMENT' AS REC_SRC

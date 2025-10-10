@@ -1,11 +1,12 @@
 config {
   type: "table",
+  bigquery: { partitionBy: "DATE(LOAD_DTS)", clusterBy: ["HK_BookingID"] },
   schema: "raw_vault",
   tags: ["satellite"]
 }
 
 SELECT
-  MD5(BookingID) AS HK_BookingID,
+  TO_HEX(MD5(BookingID)) AS HK_BookingID,
   FlightID,
   PassengerID,
   Status,

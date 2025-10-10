@@ -1,11 +1,12 @@
 config {
   type: "table",
+  bigquery: { partitionBy: "DATE(LOAD_DTS)", clusterBy: ["HK_PaymentID"] },
   schema: "raw_vault",
   tags: ["satellite"]
 }
 
 SELECT
-  MD5(PaymentID) AS HK_PaymentID,
+  TO_HEX(MD5(PaymentID)) AS HK_PaymentID,
   PaymentMethod,
   Amount,
   TransactionDate,
