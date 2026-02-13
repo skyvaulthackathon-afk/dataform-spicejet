@@ -1,0 +1,25 @@
+{
+  "name": "sky-vault",
+  "version": "1.0.0",
+  "description": "dataform-spicejet for hackathontwo",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/skyvaulthackathon-afk/dataform-spicejet.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/skyvaulthackathon-afk/dataform-spicejet/issues"
+  },
+  "homepage": "https://github.com/skyvaulthackathon-afk/dataform-spicejet#readme",
+  "dependencies": {
+    "@dataform/core": "^3.0.34",
+    "csv-parse": "^6.1.0"
+  }
+}
